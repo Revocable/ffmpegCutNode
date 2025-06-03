@@ -1,0 +1,291 @@
+:root {
+    --bg-primary: #1E1E1E;
+    --bg-secondary: #2D2D2D;
+    --bg-tertiary: #3C3C3C;
+    --text-primary: #F0F0F0;
+    --text-secondary: #A0A0A0;
+    --accent: #007ACC;
+    --accent-hover: #0090F0;
+    --border: #4A4A4A;
+    --success: #4CAF50;
+    --success-hover: #45a049;
+    --warning: #FFC107;
+    --error: #F44336;
+    --error-hover: #d32f2f;
+    --drop-border-color: #555555;
+    --drop-bg-hover: #454545;
+
+    --font-title: "Segoe UI", Arial, sans-serif;
+    --font-body: "Segoe UI", Arial, sans-serif;
+    --font-small: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    margin: 0;
+    padding: 20px;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.container {
+    width: 100%;
+    max-width: 760px;
+    background-color: var(--bg-primary); /* Match body or slightly different if needed */
+    padding: 15px;
+    border-radius: 8px;
+    /* box-shadow: 0 0 15px rgba(0,0,0,0.3); */
+}
+
+h1 {
+    font-family: var(--font-title);
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+h2 {
+    font-family: var(--font-title);
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--text-secondary);
+    margin-top: 20px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 5px;
+}
+
+.section {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: var(--bg-secondary);
+    border-radius: 6px;
+}
+.settings-section {
+    background-color: #252526; /* Slightly different from default section for emphasis */
+}
+
+
+.drop-area {
+    border: 2px dashed var(--drop-border-color);
+    border-radius: 8px;
+    padding: 30px;
+    text-align: center;
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+    font-style: italic;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background-color 0.2s ease;
+}
+
+.drop-area.dragover {
+    background-color: var(--drop-bg-hover);
+    border-color: var(--accent);
+}
+
+.drop-area p {
+    margin: 0;
+    pointer-events: none; /* So click goes to parent */
+}
+
+.file-input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    flex-grow: 1;
+    padding: 8px 12px;
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+input[type="text"]:read-only {
+    background-color: #333;
+    cursor: default;
+}
+
+input[type="number"] {
+    width: 80px; /* Default for bitrate value */
+    flex-grow: 0;
+}
+
+button {
+    padding: 8px 15px;
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+}
+
+button:hover {
+    background-color: var(--accent-hover);
+}
+
+button:disabled {
+    background-color: var(--border);
+    color: var(--text-secondary);
+    cursor: not-allowed;
+}
+
+.info-label {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    margin-top: 5px;
+    min-height: 1.2em; /* Prevent layout shift */
+}
+
+.form-group {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-group label:not(.checkbox-label) {
+    min-width: 150px; /* Align labels */
+    color: var(--text-secondary);
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+.checkbox-label input[type="checkbox"] {
+    margin-right: 8px;
+    accent-color: var(--accent);
+}
+
+
+.segmented-button {
+    display: flex;
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.segmented-button button {
+    flex-grow: 1;
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: none;
+    border-radius: 0;
+    padding: 8px 12px;
+}
+.segmented-button button.active {
+    background-color: var(--accent);
+    color: white;
+}
+.segmented-button button:not(.active):hover {
+    background-color: var(--drop-border-color);
+}
+
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+input[type="range"] {
+    flex-grow: 1;
+    accent-color: var(--accent); /* For the track and thumb */
+    background: transparent; /* Remove default background in some browsers */
+}
+/* Custom styling for range slider thumb and track might be needed for cross-browser consistency */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--accent);
+  cursor: pointer;
+  border-radius: 50%;
+  border: 2px solid var(--bg-secondary);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--accent);
+  cursor: pointer;
+  border-radius: 50%;
+  border: 2px solid var(--bg-secondary);
+}
+
+
+progress {
+    width: 100%;
+    height: 20px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background-color: var(--bg-tertiary);
+}
+progress::-webkit-progress-bar {
+    background-color: var(--bg-tertiary);
+    border-radius: 4px;
+}
+progress::-webkit-progress-value {
+    background-color: var(--accent);
+    border-radius: 4px;
+    transition: width 0.1s ease;
+}
+progress::-moz-progress-bar {
+    background-color: var(--accent);
+    border-radius: 4px;
+    transition: width 0.1s ease;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+.action-buttons .primary-action {
+    background-color: var(--success);
+    min-width: 180px;
+    height: 40px;
+    font-size: 1.1em;
+}
+.action-buttons .primary-action:hover {
+    background-color: var(--success-hover);
+}
+.action-buttons #cancel-btn {
+    background-color: var(--warning); /* Initial for cancel */
+    min-width: 120px;
+    height: 40px;
+    font-size: 1.1em;
+}
+.action-buttons #cancel-btn:hover {
+    background-color: var(--error-hover); /* Hover to a more 'danger' color */
+}
+.action-buttons #cancel-btn:disabled {
+    background-color: var(--border);
+}

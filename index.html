@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Compressor</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Estilos personalizados para dark mode */
+        .drop-area.dragover {
+            border-color: #3b82f6 !important;
+            background-color: rgba(59, 130, 246, 0.1) !important;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            border: 2px solid #1e293b;
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            border: 2px solid #1e293b;
+        }
+        
+        input[type="range"]::-webkit-slider-track {
+            background: #475569;
+            height: 6px;
+            border-radius: 3px;
+        }
+        
+        input[type="range"]::-moz-range-track {
+            background: #475569;
+            height: 6px;
+            border-radius: 3px;
+        }
+        
+        .segmented-button button.active {
+            background-color: #3b82f6 !important;
+            color: white !important;
+        }
+        
+        /* Corrigindo a barra de progresso */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: #475569;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+    </style>
+</head>
+<body class="dark bg-dark-900 min-h-screen text-gray-100">
+    <div class="container mx-auto px-6 py-6 max-w-7xl">
+        <!-- Header -->
+        <h1 class="text-3xl font-bold text-center text-white mb-6 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+            Video Compressor
+        </h1>
+
+        <!-- Layout Principal Horizontal -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-6">
+            
+            <!-- Coluna 1: Arquivo de Entrada -->
+            <div class="bg-dark-800 rounded-xl shadow-2xl p-5 border border-dark-700">
+                <h2 class="text-lg font-semibold text-gray-200 mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    Arquivo de Entrada
+                </h2>
+                
+                <div id="drop-area" class="drop-area border-2 border-dashed border-dark-600 rounded-lg p-6 text-center cursor-pointer transition-all duration-300 hover:border-blue-500 hover:bg-dark-700/50 mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-dark-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    <p id="drop-instructions" class="text-dark-300 text-sm">Arraste um vídeo aqui ou clique</p>
+                </div>
+                
+                <div class="flex gap-2 mb-3">
+                    <input type="text" id="input-file" readonly placeholder="Nenhum arquivo selecionado" 
+                           class="flex-1 px-3 py-2 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-dark-700 text-gray-200 placeholder-dark-400 text-sm">
+                    <button id="select-input-btn" 
+                            class="px-4 py-2 bg-dark-600 text-gray-200 rounded-lg hover:bg-dark-500 transition-colors text-sm border border-dark-500">
+                        Selecionar
+                    </button>
+                </div>
+                
+                <p id="file-info-label" class="text-xs text-dark-300">Nenhum arquivo selecionado.</p>
+            </div>
+
+            <!-- Coluna 2: Configurações -->
+            <div class="bg-dark-800 rounded-xl shadow-2xl p-5 border border-dark-700">
+                <h2 class="text-lg font-semibold text-gray-200 mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Configurações
+                </h2>
+                
+                <div class="mb-4">
+                    <label for="codec-select" class="block text-sm font-medium text-gray-300 mb-2">Codec:</label>
+                    <select id="codec-select" class="w-full px-3 py-2 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-dark-700 text-gray-200 text-sm">
+                        <option value="h264">H.264 (libx264)</option>
+                        <option value="h265">H.265 (libx265)</option>
+                        <option value="vp9">VP9 (libvpx-vp9)</option>
+                        <option value="av1">AV1 (libaom-av1)</option>
+                    </select>
+                </div>
+
+                <div id="vaapi-group" class="mb-4" style="display: none;">
+                    <label class="flex items-center p-2 bg-dark-700 rounded-lg border border-dark-600">
+                        <input type="checkbox" id="use-vaapi" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-dark-500 rounded bg-dark-600">
+                        <span class="ml-2 text-xs text-gray-300">Usar VA-API (Linux)</span>
+                    </label>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Modo de Bitrate:</label>
+                    <div class="segmented-button flex rounded-lg overflow-hidden border border-dark-600 bg-dark-700">
+                        <button id="bitrate-mode-manual" class="active flex-1 py-2 text-center transition-colors text-gray-200 text-sm">Manual</button>
+                        <button id="bitrate-mode-auto" class="flex-1 py-2 text-center transition-colors text-gray-200 text-sm bg-dark-600">Automático</button>
+                    </div>
+                </div>
+                
+                <div class="bitrate-manual-controls mb-4">
+                    <label for="bitrate-value" class="block text-sm font-medium text-gray-300 mb-2">Bitrate Vídeo (kbps):</label>
+                    <div class="flex items-center gap-3">
+                        <input type="range" id="bitrate-slider" min="100" max="15000" value="2000" step="100" 
+                               class="flex-1 h-2 bg-dark-600 rounded-lg appearance-none cursor-pointer">
+                        <input type="number" id="bitrate-value" value="2000" min="100" max="50000" 
+                               class="w-20 px-2 py-1 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-dark-700 text-gray-200 text-sm">
+                    </div>
+                </div>
+
+                <div class="bitrate-auto-controls mb-4" style="display: none;">
+                    <label for="target-size-mb" class="block text-sm font-medium text-gray-300 mb-2">Tamanho Alvo (MB):</label>
+                    <input type="number" id="target-size-mb" value="100" min="1" 
+                           class="w-full px-3 py-2 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-dark-700 text-gray-200 text-sm">
+                </div>
+                
+                <p id="estimated-size-label" class="text-sm text-blue-400 font-medium">Tamanho Estimado: N/A</p>
+            </div>
+
+            <!-- Coluna 3: Arquivo de Saída -->
+            <div class="bg-dark-800 rounded-xl shadow-2xl p-5 border border-dark-700">
+                <h2 class="text-lg font-semibold text-gray-200 mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Arquivo de Saída
+                </h2>
+                
+                <div class="flex gap-2 mb-4">
+                    <input type="text" id="output-file" placeholder="Caminho do arquivo de saída..." 
+                           class="flex-1 px-3 py-2 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-dark-700 text-gray-200 placeholder-dark-400 text-sm">
+                    <button id="select-output-btn" 
+                            class="px-4 py-2 bg-dark-600 text-gray-200 rounded-lg hover:bg-dark-500 transition-colors text-sm border border-dark-500">
+                        Salvar Como...
+                    </button>
+                </div>
+
+                <!-- Progresso -->
+                <div class="mb-4">
+                    <div class="progress-container mb-3">
+                        <div id="progress-bar" class="progress-fill"></div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center text-xs text-gray-400 mb-4">
+                        <span id="status-label" class="font-medium text-gray-300">Pronto</span>
+                        <div class="flex gap-4">
+                            <span id="fps-label">FPS: N/A</span>
+                            <span id="speed-label">Velocidade: N/A</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="flex gap-3">
+                    <button id="compress-btn" 
+                            class="flex-1 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 font-semibold text-sm shadow-lg">
+                        Iniciar Compressão
+                    </button>
+                    <button id="cancel-btn" 
+                            class="px-6 py-3 bg-dark-600 text-gray-300 rounded-lg hover:bg-red-600 hover:text-white transition-colors font-semibold text-sm border border-dark-500" 
+                            disabled>
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+    <script>
+        // Script adicional para corrigir a barra de progresso
+        document.addEventListener('DOMContentLoaded', function() {
+            const originalProgressBar = document.getElementById('progress-bar');
+            
+            // Interceptar mudanças na barra de progresso original
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
+                        const value = originalProgressBar.value || 0;
+                        const max = originalProgressBar.max || 100;
+                        const percentage = (value / max) * 100;
+                        originalProgressBar.style.width = percentage + '%';
+                    }
+                });
+            });
+            
+            observer.observe(originalProgressBar, {
+                attributes: true,
+                attributeFilter: ['value']
+            });
+            
+            // Também interceptar mudanças diretas no style.width
+            const originalSetAttribute = originalProgressBar.setAttribute;
+            originalProgressBar.setAttribute = function(name, value) {
+                if (name === 'value') {
+                    const max = this.max || 100;
+                    const percentage = (value / max) * 100;
+                    this.style.width = percentage + '%';
+                }
+                return originalSetAttribute.call(this, name, value);
+            };
+        });
+    </script>
+</body>
+</html>
